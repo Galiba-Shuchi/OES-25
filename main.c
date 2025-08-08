@@ -14,25 +14,30 @@ void student_menu();
 void exam_rules();
 void student_exam();
 void show_all_results();
-
-
+void register_admin(const char *admin_role);
+void login_admin();
 
 typedef struct
 {
     char student_id[20];
     char name[50];
     char password[50];
-    char role[10];
+    char student_role[10];
 } user;
 
+typedef struct
+{
+    char admin_id[20];
+    char name[50];
+    char password[50];
+    char admin_role[10];
+} admin;
 
-
-typedef struct {
+typedef struct
+{
     char course_name[100];
     char course_code[20];
 } Course;
-
-
 
 typedef struct
 {
@@ -41,8 +46,6 @@ typedef struct
     char check;
 } MCQ;
 
-
-
 typedef struct
 {
     char question[300];
@@ -50,18 +53,14 @@ typedef struct
     char student_answer;
 } WrongAnswer;
 
-
-
-typedef struct {
+typedef struct
+{
     char student_id[20];
     char course_code[20];
     int score;
 } ExamResult;
 
-
-
-
-void register_user(const char *role)
+void register_user(const char *student_role)
 {
     FILE *file = fopen("user.txt", "a");
     if (file == NULL)
@@ -70,20 +69,19 @@ void register_user(const char *role)
         return;
     }
     user newuser;
-    strcpy(newuser.role, role);
+    strcpy(newuser.student_role, student_role);
 
-    printf("Enter %s's ID: ", role);
+    printf("Enter %s's ID: ", student_role);
     fgets(newuser.student_id, sizeof(newuser.student_id), stdin);
     newuser.student_id[strcspn(newuser.student_id, "\n")] = '\0';
 
-    printf("Enter %s's name: ", role);
+    printf("Enter %s's name: ", student_role);
     fgets(newuser.name, sizeof(newuser.name), stdin);
     newuser.name[strcspn(newuser.name, "\n")] = '\0';
 
-    printf("Enter %s's password: ", role);
+    printf("Enter %s's password: ", student_role);
     fgets(newuser.password, sizeof(newuser.password), stdin);
     newuser.password[strcspn(newuser.password, "\n")] = '\0';
-
 
     // file = fopen("customer_data/data.txt", "a");
     fprintf(file, "%s %s %s\n", newuser.student_id, newuser.name, newuser.password);
@@ -92,15 +90,13 @@ void register_user(const char *role)
     // fwrite(&newuser, sizeof(user), 1, file);
     // fflush(file);
     // fclose(file);
-    printf("\n%s's registration successful.\n\n", role);
+    printf("\n%s's registration successful.\n\n", student_role);
 }
 
-
-
-
-int login_user(const char *role)
+int login_user(const char *student_role)
 {
-    FILE *file = fopen("user.bin", "rb");
+    //  FILE *file = fopen("user.bin", "rb");
+    FILE *file = fopen("user.txt", "r");
     if (file == NULL)
     {
         perror("Error: Unable to open user database for login. Please try again later.\n");
@@ -110,32 +106,144 @@ int login_user(const char *role)
 
     printf("\n");
 
-    printf("Enter %s's ID: ", role);
+    printf("Enter %s's ID: ", student_role);
     fgets(newuser.student_id, sizeof(newuser.student_id), stdin);
     newuser.student_id[strcspn(newuser.student_id, "\n")] = '\0';
 
-    printf("Enter %s's name: ", role);
-    fgets(newuser.name, sizeof(newuser.name), stdin);
-    newuser.name[strcspn(newuser.name, "\n")] = '\0';
+    // printf("Enter %s's name: ", role);
+    // fgets(newuser.name, sizeof(newuser.name), stdin);
+    // newuser.name[strcspn(newuser.name, "\n")] = '\0';
 
-    printf("Enter %s's password: ", role);
+    printf("Enter %s's password: ", student_role);
     fgets(newuser.password, sizeof(newuser.password), stdin);
     newuser.password[strcspn(newuser.password, "\n")] = '\0';
 
-    while (fread(&saveduser, sizeof(user), 1, file))
-        if ((strcmp(newuser.student_id, saveduser.student_id) == 0) && (strcmp(newuser.password, saveduser.password) == 0) && (strcmp(role, saveduser.role) == 0))
+    char userName[10];
+
+    int login = 0;
+    while (fscanf(file, "%s %s %s\n", saveduser.student_id, userName, saveduser.password) != EOF)
+    {
+
+        if ((strcmp(newuser.student_id, saveduser.student_id) == 0) && (strcmp(newuser.password, saveduser.password) == 0))
         {
+            login = 1;
+            break;
             printf("\nLogin Successful.\n");
-            fclose(file);
-            return 1;
         }
-    printf("Login failed. Incorrect credentials or role.\n");
+    }
     fclose(file);
-    return 0;
+
+    if (login == 1)
+    {
+        student_menu();
+    }
+    else if (login == 0)
+    {
+        printf("Error Login");
+    }
+
+    // while (fread(&saveduser, sizeof(user), 1, file))
+    //     if ((strcmp(newuser.student_id, saveduser.student_id) == 0) && (strcmp(newuser.password, saveduser.password) == 0) && (strcmp(role, saveduser.role) == 0))
+    //     {
+    //         printf("\nLogin Successful.\n");
+    //         fclose(file);
+    //         return 1;
+    //     }
+    // printf("Login failed. Incorrect credentials or role.\n");
+    // fclose(file);
+    // return 0;
 }
 
+void register_admin(const char *admin_role)
+{
+    FILE *file = fopen("admin.txt", "a");
+    if (file == NULL)
+    {
+        perror("Error: Unable to open admin database for registration. Please try again later.\n");
+        return;
+    }
+    admin newadmin;
+    strcpy(newadmin.admin_role, admin_role);
 
+    printf("Enter %s's ID: ", admin_role);
+    fgets(newadmin.admin_id, sizeof(newadmin.admin_id), stdin);
+    newadmin.admin_id[strcspn(newadmin.admin_id, "\n")] = '\0';
 
+    printf("Enter %s's name: ", admin_role);
+    fgets(newadmin.name, sizeof(newadmin.name), stdin);
+    newadmin.name[strcspn(newadmin.name, "\n")] = '\0';
+
+    printf("Enter %s's password: ", admin_role);
+    fgets(newadmin.password, sizeof(newadmin.password), stdin);
+    newadmin.password[strcspn(newadmin.password, "\n")] = '\0';
+
+    printf("%s %s %s\n", newadmin.admin_id, newadmin.name, newadmin.password);
+    // file = fopen("customer_data/data.txt", "a");
+    fprintf(file, "%s %s %s\n", newadmin.admin_id, newadmin.name, newadmin.password);
+    fclose(file);
+
+    // fwrite(&newuser, sizeof(user), 1, file);
+    // fflush(file);
+    // fclose(file);
+    printf("\n%s's registration successful.\n\n", admin_role);
+}
+
+void login_admin()
+{
+    //  FILE *file = fopen("admin.txt", "rb");
+    FILE *file = fopen("admin.txt", "r");
+
+    admin newadmin, savedadmin;
+
+    printf("\n");
+
+    printf("Enter Admin's ID: ");
+    fgets(newadmin.admin_id, sizeof(newadmin.admin_id), stdin);
+    newadmin.admin_id[strcspn(newadmin.admin_id, "\n")] = '\0';
+
+    // printf("Enter %s's name: ", role);
+    // fgets(newuser.name, sizeof(newuser.name), stdin);
+    // newuser.name[strcspn(newuser.name, "\n")] = '\0';
+
+    printf("Enter Admin's password: ");
+    fgets(newadmin.password, sizeof(newadmin.password), stdin);
+    newadmin.password[strcspn(newadmin.password, "\n")] = '\0';
+
+    char adminName[10];
+
+    int login = 0;
+    while (fscanf(file, "%s %s %s\n", savedadmin.admin_id, adminName, savedadmin.password) != EOF)
+    {
+
+        if ((strcmp(newadmin.admin_id, savedadmin.admin_id) == 0) && (strcmp(newadmin.password, savedadmin.password) == 0))
+        {
+            login = 1;
+            break;
+        }
+    }
+    fclose(file);
+
+    if (login == 1)
+    {
+        printf("\nLogin Successful.\n");
+        admin_menu();
+    }
+    else if (login == 0)
+    {
+        printf("Error Login");
+    }
+
+    // while (fread(&saveduser, sizeof(user), 1, file))
+    //     if ((strcmp(newuser.student_id, saveduser.student_id) == 0) && (strcmp(newuser.password, saveduser.password) == 0) && (strcmp(role, saveduser.role) == 0))
+    //     {
+    //         printf("\nLogin Successful.\n");
+    //         fclose(file);
+    //         return 1;
+    //     }
+    // printf("Login failed. Incorrect credentials or role.\n");
+    // fclose(file);
+    // return 0;
+}
 
 void add_course()
 {
@@ -159,9 +267,6 @@ void add_course()
     printf("Course added successfully.\n");
 }
 
-
-
-
 void show_courses()
 {
     Course course;
@@ -180,9 +285,6 @@ void show_courses()
     }
     fclose(file);
 }
-
-
-
 
 void add_question()
 {
@@ -223,9 +325,6 @@ void add_question()
     printf("Question added successfully.\n");
 }
 
-
-
-
 void show_question(int is_admin)
 {
     MCQ qus;
@@ -245,15 +344,14 @@ void show_question(int is_admin)
 
     int question_number = 1, found = 0;
 
-    while (fread(&qus, sizeof(MCQ), 1, file) ==1)
+    while (fread(&qus, sizeof(MCQ), 1, file) == 1)
     {
         if (strcmp(qus.course_code, course_code) == 0)
         {
             printf("\n%d. %s\n", question_number++, qus.question);
-            if(is_admin)
+            if (is_admin)
             {
                 printf("Answer: %c\n", qus.check);
-
             }
             found++;
         }
@@ -265,9 +363,6 @@ void show_question(int is_admin)
 
     fclose(file);
 }
-
-
-
 
 void student_exam()
 {
@@ -361,9 +456,6 @@ void student_exam()
     printf("Your result successfully saved.\n");
 }
 
-
-
-
 void admin_menu()
 {
     int choice;
@@ -397,7 +489,7 @@ void admin_menu()
             add_question();
             break;
         case 5:
-            printf("Update questions\n");
+            printf("Update questions.\n");
             update_question();
             break;
         case 6:
@@ -408,16 +500,13 @@ void admin_menu()
             show_all_results();
             break;
         case 8:
-            printf("Logging out...\n");
+            printf("Logging out\n");
             return;
         default:
             printf("Invalid choice. Try again.\n");
         }
     }
 }
-
-
-
 
 void student_menu()
 {
@@ -439,23 +528,20 @@ void student_menu()
             show_courses();
             break;
         case 2:
-            printf("Exam instructions: )\n");
+            printf("Exam instructions: ... (not implemented)\n");
             exam_rules();
             break;
         case 3:
             student_exam();
             break;
         case 4:
-            printf("Logging out\n");
+            printf("Logging out...\n");
             return;
         default:
             printf("Invalid choice. Try again.\n");
         }
     }
 }
-
-
-
 
 void update_question()
 {
@@ -468,7 +554,7 @@ void update_question()
     MCQ questions[100];
     int total = 0;
 
-     while (fread(&questions[total], sizeof(MCQ), 1, file) == 1)
+    while (fread(&questions[total], sizeof(MCQ), 1, file) == 1)
     {
         total++;
     }
@@ -534,12 +620,7 @@ void update_question()
     fclose(file);
 
     printf("Question updated successfully.\n");
-
-
 }
-
-
-
 
 void delete_question()
 {
@@ -567,7 +648,7 @@ void delete_question()
         {
             printf("%d. %s (Answer: %c)\n", shown + 1,
                    questions[i].question, questions[i].check);
-            map[shown++] = i;          /* কোন নম্বর‑এ কোন ইনডেক্স আছে মনে রাখি */
+            map[shown++] = i; /* কোন নম্বর‑এ কোন ইনডেক্স আছে মনে রাখি */
         }
 
     if (shown == 0)
@@ -605,9 +686,6 @@ void delete_question()
     printf("Question deleted successfully.\n");
 }
 
-
-
-
 void exam_rules()
 {
     printf("\n      Exam Instructions \n");
@@ -621,9 +699,6 @@ void exam_rules()
     printf("8. Best of luck!\n");
     printf("\n\n");
 }
-
-
-
 
 void show_all_results()
 {
@@ -639,7 +714,7 @@ void show_all_results()
 
     printf("\n      Exam Results \n");
 
-     while (fread(&result, sizeof(ExamResult), 1, file) == 1)
+    while (fread(&result, sizeof(ExamResult), 1, file) == 1)
     {
         printf("Student ID: %s\n", result.student_id);
         printf("Course Code: %s\n", result.course_code);
@@ -654,10 +729,6 @@ void show_all_results()
 
     fclose(file);
 }
-
-
-
-
 
 int main()
 {
@@ -685,15 +756,16 @@ int main()
         switch (user_choice)
         {
         case 1:
-        case 2:
+            int choose1;
+            printf("\n----------Student---------\n");
             printf("\nChoose action:\n");
             printf("1. Register\n");
             printf("2. Login\n");
             printf("Enter your choice: ");
-            scanf("%d", &action_choice);
+            scanf("%d", &choose1);
             getchar();
 
-            switch (action_choice)
+            switch (choose1)
             {
             case 1:
                 register_user(role);
@@ -711,6 +783,29 @@ int main()
                 printf("Invalid action choice.\n");
             }
             break;
+
+        case 2:
+            printf("\n----------Admin---------\n");
+            int choose2;
+            printf("\nChoose action:\n");
+            printf("1. Register\n");
+            printf("2. Login\n");
+            printf("Enter your choice: ");
+            scanf("%d", &choose2);
+            getchar();
+
+            switch (choose2)
+            {
+            case 1:
+                register_admin(role);
+                break;
+            case 2:
+                login_admin();
+                break;
+            default:
+                printf("Invalid action choice.\n");
+            }
+            break;
         default:
             printf("Invalid user type.\n");
         }
@@ -718,5 +813,3 @@ int main()
 
     return 0;
 }
-
-
