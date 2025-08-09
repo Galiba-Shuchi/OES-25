@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+//user define function
 void add_course();
 void show_courses();
 void show_question();
@@ -17,6 +18,7 @@ void show_all_results();
 void register_admin(const char *admin_role);
 void login_admin();
 
+//structures
 typedef struct
 {
     char student_id[20];
@@ -24,6 +26,8 @@ typedef struct
     char password[50];
     char student_role[10];
 } user;
+
+
 
 typedef struct
 {
@@ -33,11 +37,15 @@ typedef struct
     char admin_role[10];
 } admin;
 
+
+
 typedef struct
 {
     char course_name[100];
     char course_code[20];
 } Course;
+
+
 
 typedef struct
 {
@@ -46,12 +54,16 @@ typedef struct
     char check;
 } MCQ;
 
+
+
 typedef struct
 {
     char question[300];
     char correct_answer;
     char student_answer;
 } WrongAnswer;
+
+
 
 typedef struct
 {
@@ -60,6 +72,10 @@ typedef struct
     int score;
 } ExamResult;
 
+
+
+
+//
 void register_user(const char *student_role)
 {
     FILE *file = fopen("user.txt", "a");
@@ -83,19 +99,19 @@ void register_user(const char *student_role)
     fgets(newuser.password, sizeof(newuser.password), stdin);
     newuser.password[strcspn(newuser.password, "\n")] = '\0';
 
-    // file = fopen("customer_data/data.txt", "a");
+    
     fprintf(file, "%s %s %s\n", newuser.student_id, newuser.name, newuser.password);
     fclose(file);
 
-    // fwrite(&newuser, sizeof(user), 1, file);
-    // fflush(file);
-    // fclose(file);
     printf("\n%s's registration successful.\n\n", student_role);
 }
 
+
+
+
+//function to log in a user
 int login_user(const char *student_role)
 {
-    //  FILE *file = fopen("user.bin", "rb");
     FILE *file = fopen("user.txt", "r");
     if (file == NULL)
     {
@@ -110,9 +126,6 @@ int login_user(const char *student_role)
     fgets(newuser.student_id, sizeof(newuser.student_id), stdin);
     newuser.student_id[strcspn(newuser.student_id, "\n")] = '\0';
 
-    // printf("Enter %s's name: ", role);
-    // fgets(newuser.name, sizeof(newuser.name), stdin);
-    // newuser.name[strcspn(newuser.name, "\n")] = '\0';
 
     printf("Enter %s's password: ", student_role);
     fgets(newuser.password, sizeof(newuser.password), stdin);
@@ -142,18 +155,14 @@ int login_user(const char *student_role)
         printf("Error Login");
     }
 
-    // while (fread(&saveduser, sizeof(user), 1, file))
-    //     if ((strcmp(newuser.student_id, saveduser.student_id) == 0) && (strcmp(newuser.password, saveduser.password) == 0) && (strcmp(role, saveduser.role) == 0))
-    //     {
-    //         printf("\nLogin Successful.\n");
-    //         fclose(file);
-    //         return 1;
-    //     }
-    // printf("Login failed. Incorrect credentials or role.\n");
-    // fclose(file);
-    // return 0;
+    
 }
 
+
+
+
+
+//function to registration a user
 void register_admin(const char *admin_role)
 {
     FILE *file = fopen("admin.txt", "a");
@@ -178,19 +187,17 @@ void register_admin(const char *admin_role)
     newadmin.password[strcspn(newadmin.password, "\n")] = '\0';
 
     printf("%s %s %s\n", newadmin.admin_id, newadmin.name, newadmin.password);
-    // file = fopen("customer_data/data.txt", "a");
     fprintf(file, "%s %s %s\n", newadmin.admin_id, newadmin.name, newadmin.password);
     fclose(file);
 
-    // fwrite(&newuser, sizeof(user), 1, file);
-    // fflush(file);
-    // fclose(file);
     printf("\n%s's registration successful.\n\n", admin_role);
 }
 
+
+
+//
 void login_admin()
 {
-    //  FILE *file = fopen("admin.txt", "rb");
     FILE *file = fopen("admin.txt", "r");
 
     admin newadmin, savedadmin;
@@ -201,9 +208,7 @@ void login_admin()
     fgets(newadmin.admin_id, sizeof(newadmin.admin_id), stdin);
     newadmin.admin_id[strcspn(newadmin.admin_id, "\n")] = '\0';
 
-    // printf("Enter %s's name: ", role);
-    // fgets(newuser.name, sizeof(newuser.name), stdin);
-    // newuser.name[strcspn(newuser.name, "\n")] = '\0';
+    
 
     printf("Enter Admin's password: ");
     fgets(newadmin.password, sizeof(newadmin.password), stdin);
@@ -233,18 +238,13 @@ void login_admin()
         printf("Error Login");
     }
 
-    // while (fread(&saveduser, sizeof(user), 1, file))
-    //     if ((strcmp(newuser.student_id, saveduser.student_id) == 0) && (strcmp(newuser.password, saveduser.password) == 0) && (strcmp(role, saveduser.role) == 0))
-    //     {
-    //         printf("\nLogin Successful.\n");
-    //         fclose(file);
-    //         return 1;
-    //     }
-    // printf("Login failed. Incorrect credentials or role.\n");
-    // fclose(file);
-    // return 0;
+   
 }
 
+
+
+
+//
 void add_course()
 {
     Course course;
@@ -267,6 +267,11 @@ void add_course()
     printf("Course added successfully.\n");
 }
 
+
+
+
+
+//
 void show_courses()
 {
     Course course;
@@ -286,6 +291,11 @@ void show_courses()
     fclose(file);
 }
 
+
+
+
+
+//
 void add_question()
 {
     MCQ qus;
@@ -325,6 +335,10 @@ void add_question()
     printf("Question added successfully.\n");
 }
 
+
+
+
+//
 void show_question(int is_admin)
 {
     MCQ qus;
@@ -364,6 +378,10 @@ void show_question(int is_admin)
     fclose(file);
 }
 
+
+
+
+//
 void student_exam()
 {
     show_courses();
@@ -456,6 +474,11 @@ void student_exam()
     printf("Your result successfully saved.\n");
 }
 
+
+
+
+
+//
 void admin_menu()
 {
     int choice;
@@ -508,6 +531,9 @@ void admin_menu()
     }
 }
 
+
+
+//
 void student_menu()
 {
     int choice;
@@ -543,6 +569,9 @@ void student_menu()
     }
 }
 
+
+
+//
 void update_question()
 {
     FILE *file = fopen("question.bin", "rb");
@@ -622,6 +651,11 @@ void update_question()
     printf("Question updated successfully.\n");
 }
 
+
+
+
+
+//
 void delete_question()
 {
     FILE *file = fopen("question.bin", "rb");
@@ -686,6 +720,10 @@ void delete_question()
     printf("Question deleted successfully.\n");
 }
 
+
+
+
+//
 void exam_rules()
 {
     printf("\n      Exam Instructions \n");
@@ -700,6 +738,10 @@ void exam_rules()
     printf("\n\n");
 }
 
+
+
+
+//
 void show_all_results()
 {
     ExamResult result;
@@ -730,6 +772,11 @@ void show_all_results()
     fclose(file);
 }
 
+
+
+
+
+//main function
 int main()
 {
 
