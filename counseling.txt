@@ -1,0 +1,4 @@
+
+123456|t|T001|John Smith|1.2.3|q|w
+123456|t|T001|John Smith|1.2.3|we|d
+1 1000 12345 1.2.3 QWE QW

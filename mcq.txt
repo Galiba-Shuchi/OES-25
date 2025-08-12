@@ -1,9 +1,3 @@
-SE-123|  What is the name of oggys brother?|  Jack|  Olivia|  Mruf|  BOB
-SE-123|HI|E|C|R|F|SE-123|QW|D|F|C|F|a
-SE-123|BANGLADESH|C|D|E|S|a
-SE-123|INDIA||Q|S|D|c
-HII||S|D|F|C|a
-SE-123, GALIBA, A) NAME, B) CITY, C) HI, D) SD, a
-SE-123, GALIBA, A) WE, B) WE, C) WE, D) EWE, d
-SE-232, NAME, A) RT, B) E, C) E, D) D, a
-SE-232, BYE, A) J, B) F, C) S, D) T, a
+SE-123,GALIBA,A) NAME,B) CITY,C) HI,D) SD,a
+SE-123,GALIBA,A) WE,B) WE,C) WE,D) EWE,d
+SE-232,NAME,A) RT,B) E,C) E,D) D,a
