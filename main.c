@@ -38,13 +38,13 @@ struct teacher2
 };
 struct teacher2 prevAllTeachers[100];
 
-typedef struct
-{
+typedef struct admin {
     char admin_id[20];
     char name[50];
     char password[50];
-    char admin_role[10];
+    char admin_role[20];
 } admin;
+
 
 typedef struct
 {
@@ -132,7 +132,6 @@ void updateTeacher(teacher *t);
 void deleteTeacher(teacher *t);
 void registerAdmin();
 int loginAdmin();
-void displayAdmin(const admin *a);
 // course
 void addCourse();
 void showCourses();
@@ -172,7 +171,7 @@ void addWebpageResource(const WebpageResource *w);
 void showWebpageResources(const char *course_code);
 void updateWebpageResource(const char *course_code, const char *title);
 void deleteWebpageResource(const char *course_code, const char *title);
-
+//menu
 void adminMenu();
 void teacherMenu();
 void studentMenu();
@@ -202,6 +201,8 @@ void trimNewline(char *str)
         str[len - 1] = '\0';
     }
 }
+
+
 
 // admin registration function
 void registerAdmin()
@@ -285,6 +286,7 @@ int loginAdmin()
         return 0;
     }
 }
+
 
 // STUDENT registration function
 void registerUser()
@@ -499,7 +501,6 @@ void updateUser(user *u)
     rename("temp.txt", USER_FILE);
     printf("User  updated successfully.\n");
 }
-
 // Delete user function
 void deleteUser(user *u)
 {
@@ -550,13 +551,79 @@ void deleteUser(user *u)
     printf("User  deleted successfully.\n");
 }
 
-// Display teacher function
-void displayTeacher(const teacher *t)
+//view teacher information(Admin)
+void viewTeachers()
 {
-    printf("Teacher ID: %s\n", t->teacher_id);
-    printf("Name: %s\n", t->name);
-    printf("Subject: %s\n", t->subject);
+    FILE *fp = fopen("teacher.txt", "r");
+    if (!fp)
+    {
+        printf("No teacher data found.\n");
+        return;
+    }
+
+    teacher t;
+    char line[200];
+
+    printf("=== Teacher Information ===\n");
+    printf("----------------------------\n");
+
+    while (fgets(line, sizeof(line), fp))
+    {
+        trimNewline(line);
+
+        
+        if (sscanf(line, "%19[^|]|%49[^|]|%49[^|]|%29s", t.teacher_id, t.name, t.password, t.subject) == 4)
+        {
+            printf("Teacher ID : %s\n", t.teacher_id);
+            printf("Name       : %s\n", t.name);
+            printf("Password   : %s\n", t.password);
+            printf("Subject    : %s\n", t.subject);
+            printf("----------------------------\n");
+        }
+    }
+    fclose(fp);
 }
+//view student information (admin)
+void viewStudents()
+{
+    FILE *fp = fopen("user.txt", "r");
+    if (!fp)
+    {
+        printf("No student data found.\n");
+        return;
+    }
+
+    user s;
+    char line[256];
+    printf("=== Student Information ===\n");
+    printf("----------------------------\n");
+
+    while (fgets(line, sizeof(line), fp))
+    {
+        trimNewline(line);
+
+        int numFields = sscanf(line, "%19s %49s %49s %9s",
+                              s.student_id, s.name, s.password, s.student_role);
+
+        if (numFields >= 3)
+        {
+            if (numFields == 3)
+                strcpy(s.student_role, "(empty)");
+
+            printf("Student ID   : %s\n", s.student_id);
+            printf("Name         : %s\n", s.name);
+            printf("Password     : %s\n", s.password);
+            printf("Student Role : %s\n", s.student_role);
+            printf("----------------------------\n");
+        }
+        else
+        {
+            printf("Invalid line format: %s\n", line);
+        }
+    }
+    fclose(fp);
+}
+
 
 // Update teacher function
 void updateTeacher(teacher *t)
@@ -611,7 +678,6 @@ void updateTeacher(teacher *t)
 
     printf("Teacher updated successfully.\n");
 }
-
 // Delete teacher function
 void deleteTeacher(teacher *t)
 {
@@ -663,17 +729,19 @@ void deleteTeacher(teacher *t)
     printf("Teacher deleted successfully.\n");
 }
 
+
 // Add Course Function
 void addCourse()
 {
     Course c;
+
     printf("Enter course name: ");
-    clearInputBuffer(); // Clear any leftover input
     fgets(c.course_name, sizeof(c.course_name), stdin);
-    c.course_name[strcspn(c.course_name, "\n")] = '\0';
+    trimNewline(c.course_name);
 
     printf("Enter course code: ");
-    scanf("%19s", c.course_code);
+    fgets(c.course_code, sizeof(c.course_code), stdin);
+    trimNewline(c.course_code);
 
     FILE *fp = fopen("course.txt", "a");
     if (!fp)
@@ -682,13 +750,12 @@ void addCourse()
         return;
     }
 
-    fprintf(fp, "%s|%s\n", c.course_name, c.course_code);
+    fprintf(fp, "%s,%s\n", c.course_name, c.course_code);
     fclose(fp);
 
     printf("Course added successfully.\n");
 }
-
-// Show Courses Function
+// Show Course Function
 void showCourses()
 {
     FILE *fp = fopen("course.txt", "r");
@@ -699,53 +766,62 @@ void showCourses()
     }
 
     Course c;
+    char line[256];
     printf("Course List:\n");
     printf("---------------\n");
-    while (fscanf(fp, "%99[^|]|%19[^\n]\n", c.course_name, c.course_code) == 2)
+
+    while (fgets(line, sizeof(line), fp))
     {
-        printf("Course Name: %s\n", c.course_name);
-        printf("Course Code: %s\n", c.course_code);
-        printf("---------------\n");
+        trimNewline(line);
+        if (sscanf(line, "%99[^,],%19s", c.course_name, c.course_code) == 2)
+        {
+            printf("Course Name: %s\n", c.course_name);
+            printf("Course Code: %s\n", c.course_code);
+            printf("---------------\n");
+        }
     }
     fclose(fp);
 }
-
 // Update Course Function
 void updateCourse()
 {
     char code[20];
     printf("Enter course code to update: ");
     scanf("%19s", code);
+    clearInputBuffer();
 
     FILE *fp = fopen("course.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
     if (!fp || !temp)
     {
         perror("File error");
-        if (fp)
-            fclose(fp);
-        if (temp)
-            fclose(temp);
+        if (fp) fclose(fp);
+        if (temp) fclose(temp);
         return;
     }
 
     Course c;
+    char line[256];
     int found = 0;
 
-    while (fscanf(fp, "%99[^|]|%19[^\n]\n", c.course_name, c.course_code) == 2)
+    while (fgets(line, sizeof(line), fp))
     {
-        if (strcmp(c.course_code, code) == 0)
+        trimNewline(line);
+        if (sscanf(line, "%99[^,],%19s", c.course_name, c.course_code) == 2)
         {
-            found = 1;
-            printf("Enter new course name: ");
-            clearInputBuffer();
-            fgets(c.course_name, sizeof(c.course_name), stdin);
-            c.course_name[strcspn(c.course_name, "\n")] = '\0';
+            if (strcmp(c.course_code, code) == 0)
+            {
+                found = 1;
+                printf("Enter new course name: ");
+                fgets(c.course_name, sizeof(c.course_name), stdin);
+                trimNewline(c.course_name);
 
-            printf("Enter new course code: ");
-            scanf("%19s", c.course_code);
+                printf("Enter new course code: ");
+                scanf("%19s", c.course_code);
+                clearInputBuffer();
+            }
+            fprintf(temp, "%s,%s\n", c.course_name, c.course_code);
         }
-        fprintf(temp, "%s|%s\n", c.course_name, c.course_code);
     }
 
     fclose(fp);
@@ -762,38 +838,42 @@ void updateCourse()
     rename("temp.txt", "course.txt");
     printf("Course updated successfully.\n");
 }
-
 // Delete Course Function
 void deleteCourse()
 {
     char code[20];
     printf("Enter course code to delete: ");
     scanf("%19s", code);
+    clearInputBuffer();
 
     FILE *fp = fopen("course.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
     if (!fp || !temp)
     {
         perror("File error");
-        if (fp)
-            fclose(fp);
-        if (temp)
-            fclose(temp);
+        if (fp) fclose(fp);
+        if (temp) fclose(temp);
         return;
     }
 
     Course c;
+    char line[256];
     int found = 0;
 
-    while (fscanf(fp, "%99[^|]|%19[^\n]\n", c.course_name, c.course_code) == 2)
+    while (fgets(line, sizeof(line), fp))
     {
-        if (strcmp(c.course_code, code) == 0)
+        trimNewline(line);
+
+        if (sscanf(line, "%99[^,],%19s", c.course_name, c.course_code) == 2)
         {
-            found = 1;
-            // skip writing to delete course
-            continue;
+            if (strcmp(c.course_code, code) == 0)
+            {
+                found = 1;
+                
+                continue;
+            }
+            fprintf(temp, "%s,%s\n", c.course_name, c.course_code);
         }
-        fprintf(temp, "%s|%s\n", c.course_name, c.course_code);
     }
 
     fclose(fp);
@@ -808,9 +888,10 @@ void deleteCourse()
 
     remove("course.txt");
     rename("temp.txt", "course.txt");
-
     printf("Course deleted successfully.\n");
 }
+
+
 
 // Add Question Function
 void addQuestion()
@@ -1135,6 +1216,8 @@ void showQuestionsForTeacher(const char *course_code)
         printf("No questions found for this course.\n");
     }
 }
+
+
 
 // Function to conduct exam
 void studentExam(const char *student_id, const char *course_code)
@@ -2041,8 +2124,8 @@ void adminMenu()
         printf("4. Delete Course\n");
         printf("5. View Teacher Information\n");
         printf("6. View Student Information\n");
-        printf("7. Delete Teacher\n");
-        printf("8. Delete Student\n");
+        printf("7. Counsiling Information\n");
+        printf("8.View Complains\n");
         printf("9. Show Questions\n");
         printf("10. Show All Results\n");
         printf("11. Logout\n");
@@ -2064,21 +2147,22 @@ void adminMenu()
         case 4:
             deleteCourse();
             break;
-        case 5:
-            // View Teacher Information implementation
-            printf("Teacher information functionality\n");
+        
+            case 5:
+            // View Teacher Information
+            viewTeachers();
             break;
         case 6:
-            // View Student Information implementation
-            printf("Student information functionality\n");
+            // View Student Information
+            viewStudents();
             break;
         case 7:
-            // Delete Teacher implementation
-            printf("Delete teacher functionality\n");
+            // Counselling Information
+            listAllCounselings();
             break;
         case 8:
-            // Delete Student implementation
-            printf("Delete student functionality\n");
+            // View Complains
+            adminViewComplaint();
             break;
         case 9:
             showQuestionsForAdmin();
@@ -2412,15 +2496,15 @@ void teacherMenu()
         }
 
         case 13:
-            showAllResults(""); // can pass course if needed
+            showAllResults(""); 
             break;
 
-            // ধরে নিলাম তোমার trimNewline ফাংশন আছে, যা fgets দিয়ে নেওয়া স্ট্রিং থেকে '\n' সরায়
+    
 
         case 14:
         {
             Counseling c;
-            static int next_record_id = 1; // record_id অটো বাড়াতে
+            static int next_record_id = 1; 
 
             printf("Enter student ID: ");
             fgets(c.student_id, sizeof(c.student_id), stdin);
@@ -2442,7 +2526,7 @@ void teacherMenu()
             fgets(c.notes, sizeof(c.notes), stdin);
             trimNewline(c.notes);
 
-            c.record_id = next_record_id++; // রেকর্ড আইডি বাড়ানো
+            c.record_id = next_record_id++; 
 
             addCounseling(&c);
             break;
