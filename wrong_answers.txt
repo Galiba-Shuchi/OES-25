@@ -1,0 +1,11 @@
+1000|Sun rises in?|a|b
+1000|1kg=?g|c|a
+1000|Fastest animal?|c|a
+1000|BD currency?|b|a
+1000|Opposite of Hot?|b|a
+1000|BNS?|d|a
+1000|C Programming?|d|a
+10001|1kg=?g|c|d
+10001|Opposite of Hot?|b|a
+10001|BNS?|d|a
+10001|C Programming?|d|a

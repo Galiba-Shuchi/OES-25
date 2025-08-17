@@ -1,3 +1,11 @@
-SE-123,GALIBA,A) NAME,B) CITY,C) HI,D) SD,a
-SE-123,GALIBA,A) WE,B) WE,C) WE,D) EWE,d
-SE-232,NAME,A) RT,B) E,C) E,D) D,a
+SE-123,2+2?,3,4,5,6,b
+SE-123,Sun rises in?,East,West,North,South,a
+SE-123,CO is?,gas,liquid,splod,nothing,a
+SE-123,Capital of BD?,Dhaka,Sylhet,Khulna,Rajshahi,a
+SE-123,Day after Fri?,Sat,Sun,Mon,Thu,a
+SE-123,1kg=?g,10,100,1000,10000,c
+SE-123,Fastest animal?,Lion,Tiger,Cheetah,Horse,c
+SE-123,BD currency?,Dollar,Taka,Rupee,Yen,b
+SE-123,Opposite of Hot?,Warm,Cold,Dry,Wet,b
+SE-123,BNS?,123,234,123,232,d
+SE-123,C Programming?,faltu,valo,loss project,waste of time,d
